@@ -2,6 +2,7 @@ package com.example
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -63,7 +64,16 @@ enum class AppScreen {
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.light(
+                android.graphics.Color.TRANSPARENT,
+                android.graphics.Color.TRANSPARENT
+            ),
+            navigationBarStyle = SystemBarStyle.light(
+                android.graphics.Color.WHITE,
+                android.graphics.Color.WHITE
+            )
+        )
 
         val database = FuelDatabase.getDatabase(this)
         val repository = FuelRepository(database.fuelLogDao(), database.serviceLogDao())
@@ -153,15 +163,17 @@ fun FuelTrackerApp(viewModel: FuelViewModel, modifier: Modifier = Modifier) {
                             }
                             Text(
                                 text = titleText,
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.ExtraBold,
                                 fontSize = 18.sp,
+                                color = Color(0xFF0F172A),
                                 modifier = Modifier.testTag("app_title")
                             )
                             Text(
                                 text = subText,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.secondary,
-                                fontSize = 10.sp
+                                color = Color(0xFF334155),
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 11.sp
                             )
                         }
                     }
@@ -217,7 +229,8 @@ fun FuelTrackerApp(viewModel: FuelViewModel, modifier: Modifier = Modifier) {
                     ) {
                         Icon(
                             imageVector = Icons.Default.Settings,
-                            contentDescription = "Units"
+                            contentDescription = "Units",
+                            tint = Color(0xFF0F172A)
                         )
                     }
 
@@ -265,11 +278,19 @@ fun FuelTrackerApp(viewModel: FuelViewModel, modifier: Modifier = Modifier) {
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
-                    titleContentColor = Color(0xFF1B1B1F)
+                    titleContentColor = Color(0xFF0F172A),
+                    actionIconContentColor = Color(0xFF0F172A)
                 )
             )
         },
         bottomBar = {
+            val navItemColors = NavigationBarItemDefaults.colors(
+                selectedIconColor = Color(0xFF0052B4),
+                selectedTextColor = Color(0xFF0052B4),
+                indicatorColor = Color(0xFFDBEAFE),
+                unselectedIconColor = Color(0xFF334155),
+                unselectedTextColor = Color(0xFF334155)
+            )
             NavigationBar(
                 containerColor = Color.White,
                 tonalElevation = 8.dp,
@@ -280,7 +301,8 @@ fun FuelTrackerApp(viewModel: FuelViewModel, modifier: Modifier = Modifier) {
                     selected = currentScreen == AppScreen.FUEL,
                     onClick = { currentScreen = AppScreen.FUEL },
                     icon = { Icon(Icons.Default.Info, contentDescription = "Fuel") },
-                    label = { Text(if (languageIsFarsi) "سوخت" else "Fuel", fontWeight = FontWeight.SemiBold) },
+                    label = { Text(if (languageIsFarsi) "سوخت" else "Fuel", fontWeight = FontWeight.Bold) },
+                    colors = navItemColors,
                     modifier = Modifier.testTag("nav_fuel")
                 )
 
@@ -299,7 +321,8 @@ fun FuelTrackerApp(viewModel: FuelViewModel, modifier: Modifier = Modifier) {
                             Icon(Icons.Default.Build, contentDescription = "Services")
                         }
                     },
-                    label = { Text(if (languageIsFarsi) "سرویس‌ها" else "Services", fontWeight = FontWeight.SemiBold) },
+                    label = { Text(if (languageIsFarsi) "سرویس‌ها" else "Services", fontWeight = FontWeight.Bold) },
+                    colors = navItemColors,
                     modifier = Modifier.testTag("nav_services")
                 )
 
@@ -308,7 +331,8 @@ fun FuelTrackerApp(viewModel: FuelViewModel, modifier: Modifier = Modifier) {
                     selected = currentScreen == AppScreen.REPORTS,
                     onClick = { currentScreen = AppScreen.REPORTS },
                     icon = { Icon(Icons.Default.Star, contentDescription = "Reports") },
-                    label = { Text(if (languageIsFarsi) "گزارشات" else "Reports", fontWeight = FontWeight.SemiBold) },
+                    label = { Text(if (languageIsFarsi) "گزارشات" else "Reports", fontWeight = FontWeight.Bold) },
+                    colors = navItemColors,
                     modifier = Modifier.testTag("nav_reports")
                 )
             }
@@ -351,7 +375,7 @@ fun FuelTrackerApp(viewModel: FuelViewModel, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(Color(0xFFFDFBFF))
+                .background(Color(0xFFF1F5F9))
                 .drawBehind {
                     // Modern glowing frosted/blurred bubble 1
                     drawCircle(
@@ -604,14 +628,22 @@ fun FuelScreenContent(
             Text(
                 text = if (languageIsFarsi) "سوابق سوخت‌گیری" else "Fill-up History",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
+                fontSize = 17.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color(0xFF0F172A)
             )
-            Text(
-                text = "${uiStateLogs.size} ${if (languageIsFarsi) "ثبت شده" else "logs"}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.secondary
-            )
+            Surface(
+                shape = RoundedCornerShape(10.dp),
+                color = Color(0xFFE2E8F0)
+            ) {
+                Text(
+                    text = "${uiStateLogs.size} ${if (languageIsFarsi) "ثبت شده" else "logs"}",
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1E293B),
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                )
+            }
         }
 
         // Entries List
@@ -764,9 +796,9 @@ fun StatsDashboard(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = if (languageIsFarsi) "میانگین مصرف دوره" else "Overall Efficiency",
-                        style = MaterialTheme.typography.labelSmall,
+                        style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White.copy(alpha = 0.6f)
+                        color = Color.White.copy(alpha = 0.92f)
                     )
                     Text(
                         text = if (stats.averageEfficiency != null) {
@@ -777,7 +809,7 @@ fun StatsDashboard(
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Black,
                         color = Color.White,
-                        fontSize = 28.sp
+                        fontSize = 26.sp
                     )
                 }
             }
@@ -886,10 +918,10 @@ fun StatSubCard(
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.12f)
+            containerColor = Color.White.copy(alpha = 0.16f)
         ),
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.18f))
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.28f))
     ) {
         Column(
             modifier = Modifier
@@ -900,7 +932,8 @@ fun StatSubCard(
             Text(
                 text = title,
                 style = MaterialTheme.typography.labelSmall,
-                color = Color.White.copy(alpha = 0.65f),
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White.copy(alpha = 0.92f),
                 textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -909,7 +942,7 @@ fun StatSubCard(
             Text(
                 text = value,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.ExtraBold,
                 color = Color.White,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
@@ -954,9 +987,11 @@ fun FuelLogItemCard(
             .testTag("log_item_card_${uiModel.log.id}"),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xCCFFFFFF)
+            containerColor = Color.White,
+            contentColor = Color(0xFF0F172A)
         ),
-        border = BorderStroke(1.dp, Color(0xFFDDE2F9))
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = BorderStroke(1.dp, Color(0xFFCBD5E1))
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -972,29 +1007,31 @@ fun FuelLogItemCard(
                         modifier = Modifier
                             .size(44.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)),
+                            .background(Color(0xFFDBEAFE)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.DateRange,
                             contentDescription = "Date Emblem",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(20.dp)
+                            tint = Color(0xFF0052B4),
+                            modifier = Modifier.size(22.dp)
                         )
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
                             text = formattedDate,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF0F172A)
                         )
                         Text(
                             text = if (languageIsFarsi) "جایگاه سوخت" else "Fill-up Station",
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.secondary,
-                            fontSize = 11.sp
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFF475569),
+                            fontSize = 12.sp
                         )
                     }
                 }
@@ -1003,33 +1040,33 @@ fun FuelLogItemCard(
                     IconButton(
                         onClick = onEditClick,
                         modifier = Modifier
-                            .size(36.dp)
+                            .size(40.dp)
                             .testTag("edit_btn_${uiModel.log.id}")
                     ) {
                         Icon(
                             imageVector = Icons.Default.Edit,
                             contentDescription = "Edit",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(18.dp)
+                            tint = Color(0xFF0052B4),
+                            modifier = Modifier.size(19.dp)
                         )
                     }
                     IconButton(
                         onClick = onDeleteClick,
                         modifier = Modifier
-                            .size(36.dp)
+                            .size(40.dp)
                             .testTag("delete_btn_${uiModel.log.id}")
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "Delete",
-                            tint = MaterialTheme.colorScheme.error.copy(alpha = 0.8f),
-                            modifier = Modifier.size(18.dp)
+                            tint = Color(0xFFDC2626),
+                            modifier = Modifier.size(19.dp)
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             // Body: Core fill up info
             Row(
@@ -1041,12 +1078,17 @@ fun FuelLogItemCard(
                     Text(
                         text = if (languageIsFarsi) "کیلومتر شمار" else "Odometer",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.secondary
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF334155),
+                        fontSize = 12.sp
                     )
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = String.format(Locale.US, "%,.0f %s", uiModel.log.odometer, distanceUnit),
                         style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF0F172A),
+                        fontSize = 15.sp
                     )
                 }
 
@@ -1055,27 +1097,36 @@ fun FuelLogItemCard(
                     Text(
                         text = if (languageIsFarsi) "حجم سوخت" else "Refilled",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.secondary
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF334155),
+                        fontSize = 12.sp
                     )
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = String.format(Locale.US, "%.1f %s", uiModel.log.fuelAmount, fuelUnit),
                         style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF0F172A),
+                        fontSize = 15.sp
                     )
                 }
 
                 // Info block 3
-                Column {
+                Column(horizontalAlignment = Alignment.End) {
                     Text(
                         text = if (languageIsFarsi) "هزینه کل" else "Total Cost",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.secondary
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF334155),
+                        fontSize = 12.sp
                     )
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = String.format(Locale.US, "%,.0f %s", uiModel.log.totalCost, currencySymbol),
                         style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF0052B4),
+                        fontSize = 15.sp
                     )
                 }
             }
@@ -1087,9 +1138,9 @@ fun FuelLogItemCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(14.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
-                    .border(1.dp, Color(0xFFDDE2F9).copy(alpha = 0.5f), RoundedCornerShape(14.dp))
-                    .padding(12.dp),
+                    .background(Color(0xFFF1F5F9))
+                    .border(1.dp, Color(0xFFCBD5E1), RoundedCornerShape(14.dp))
+                    .padding(horizontal = 14.dp, vertical = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -1102,12 +1153,17 @@ fun FuelLogItemCard(
                     Text(
                         text = if (languageIsFarsi) "مسافت طی شده" else "Interval Distance",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.secondary
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF334155),
+                        fontSize = 12.sp
                     )
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = distanceText,
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF0F172A),
+                        fontSize = 14.sp
                     )
                 }
 
@@ -1122,35 +1178,44 @@ fun FuelLogItemCard(
                     Text(
                         text = if (languageIsFarsi) "مصرف این دوره" else "Interval Efficiency",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.secondary
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF334155),
+                        fontSize = 12.sp
                     )
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = efficiencyText,
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = if (uiModel.efficiency != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                        fontWeight = FontWeight.ExtraBold,
+                        color = if (uiModel.efficiency != null) Color(0xFF0052B4) else Color(0xFF334155),
+                        fontSize = 14.sp
                     )
                 }
             }
 
             // Notes if available
             if (uiModel.log.notes.isNotBlank()) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.Top
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color(0xFFF8FAFC))
+                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         imageVector = Icons.Default.Info,
                         contentDescription = "Notes",
-                        tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.size(14.dp).padding(top = 2.dp)
+                        tint = Color(0xFF334155),
+                        modifier = Modifier.size(15.dp)
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = uiModel.log.notes,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.secondary,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF1E293B),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -1505,8 +1570,8 @@ fun EmptyStateWidget(languageIsFarsi: Boolean) {
         Text(
             text = if (languageIsFarsi) "هیچ سابقه‌ای ثبت نشده است" else "Your Tank is Empty!",
             style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
+            fontWeight = FontWeight.ExtraBold,
+            color = Color(0xFF0F172A)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -1517,8 +1582,9 @@ fun EmptyStateWidget(languageIsFarsi: Boolean) {
             else
                 "Tap the + button below to add your first gas fill-up. The app will calculate fuel economy dynamically once you register 2 logs.",
             style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.secondary,
+            color = Color(0xFF334155),
             modifier = Modifier.padding(horizontal = 16.dp)
         )
     }

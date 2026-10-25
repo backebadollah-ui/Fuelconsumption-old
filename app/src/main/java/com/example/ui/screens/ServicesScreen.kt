@@ -94,8 +94,9 @@ fun ServicesScreen(
                             Column {
                                 Text(
                                     text = if (languageIsFarsi) "کل هزینه‌های سرویس و تعمیرات" else "Total Maintenance Spend",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = Color.White.copy(alpha = 0.8f)
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color.White.copy(alpha = 0.92f)
                                 )
                                 Text(
                                     text = String.format(Locale.US, "%,.0f %s", serviceStats.totalServiceCost, currencySymbol),
@@ -128,20 +129,22 @@ fun ServicesScreen(
                         ) {
                             Surface(
                                 shape = RoundedCornerShape(12.dp),
-                                color = Color.White.copy(alpha = 0.15f),
+                                color = Color.White.copy(alpha = 0.18f),
+                                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.25f)),
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Column(modifier = Modifier.padding(10.dp)) {
                                     Text(
                                         text = if (languageIsFarsi) "دفعات سرویس" else "Services Done",
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = Color.White.copy(alpha = 0.7f),
-                                        fontSize = 10.sp
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color.White.copy(alpha = 0.92f),
+                                        fontSize = 12.sp
                                     )
                                     Text(
                                         text = "${serviceStats.serviceCount} ${if (languageIsFarsi) "مورد" else "items"}",
                                         style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
+                                        fontWeight = FontWeight.ExtraBold,
                                         color = Color.White
                                     )
                                 }
@@ -155,20 +158,22 @@ fun ServicesScreen(
 
                             Surface(
                                 shape = RoundedCornerShape(12.dp),
-                                color = Color.White.copy(alpha = 0.15f),
+                                color = Color.White.copy(alpha = 0.18f),
+                                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.25f)),
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Column(modifier = Modifier.padding(10.dp)) {
                                     Text(
                                         text = if (languageIsFarsi) "بیشترین بخش هزینه" else "Highest Category",
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = Color.White.copy(alpha = 0.7f),
-                                        fontSize = 10.sp
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color.White.copy(alpha = 0.92f),
+                                        fontSize = 12.sp
                                     )
                                     Text(
                                         text = topCatName,
                                         style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
+                                        fontWeight = FontWeight.ExtraBold,
                                         color = Color.White,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
@@ -187,9 +192,9 @@ fun ServicesScreen(
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
                         text = if (languageIsFarsi) "یادآوری‌های موعد سرویس" else "Upcoming Maintenance Alerts",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF0F172A)
                     )
                     serviceStats.alerts.take(2).forEach { alert ->
                         AlertCard(alert = alert, unit = distanceUnit, languageIsFarsi = languageIsFarsi)
@@ -200,23 +205,55 @@ fun ServicesScreen(
 
         // Filter Chips
         item {
+            val chipColors = FilterChipDefaults.filterChipColors(
+                containerColor = Color.White,
+                labelColor = Color(0xFF1E293B),
+                iconColor = Color(0xFF334155),
+                selectedContainerColor = Color(0xFF0052B4),
+                selectedLabelColor = Color.White,
+                selectedLeadingIconColor = Color.White
+            )
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
                 item {
+                    val isAllSelected = selectedFilter == "ALL"
                     FilterChip(
-                        selected = selectedFilter == "ALL",
+                        selected = isAllSelected,
                         onClick = { selectedFilter = "ALL" },
-                        label = { Text(if (languageIsFarsi) "همه (${services.size})" else "All (${services.size})") }
+                        colors = chipColors,
+                        border = FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = isAllSelected,
+                            borderColor = Color(0xFF94A3B8),
+                            selectedBorderColor = Color(0xFF0052B4),
+                            borderWidth = 1.dp
+                        ),
+                        label = {
+                            Text(
+                                text = if (languageIsFarsi) "همه (${services.size})" else "All (${services.size})",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp
+                            )
+                        }
                     )
                 }
                 items(SERVICE_CATEGORIES) { cat ->
                     val count = services.count { it.serviceType == cat.key }
                     if (count > 0 || selectedFilter == cat.key) {
+                        val isCatSelected = selectedFilter == cat.key
                         FilterChip(
-                            selected = selectedFilter == cat.key,
+                            selected = isCatSelected,
                             onClick = { selectedFilter = cat.key },
+                            colors = chipColors,
+                            border = FilterChipDefaults.filterChipBorder(
+                                enabled = true,
+                                selected = isCatSelected,
+                                borderColor = Color(0xFF94A3B8),
+                                selectedBorderColor = Color(0xFF0052B4),
+                                borderWidth = 1.dp
+                            ),
                             leadingIcon = {
                                 Icon(
                                     imageVector = cat.icon,
@@ -226,7 +263,9 @@ fun ServicesScreen(
                             },
                             label = {
                                 Text(
-                                    text = if (languageIsFarsi) "${cat.titleFa} ($count)" else "${cat.titleEn} ($count)"
+                                    text = if (languageIsFarsi) "${cat.titleFa} ($count)" else "${cat.titleEn} ($count)",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp
                                 )
                             }
                         )
@@ -243,7 +282,11 @@ fun ServicesScreen(
                         .fillMaxWidth()
                         .padding(top = 16.dp),
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White,
+                        contentColor = Color(0xFF0F172A)
+                    ),
+                    border = BorderStroke(1.dp, Color(0xFFCBD5E1))
                 ) {
                     Column(
                         modifier = Modifier
@@ -254,14 +297,14 @@ fun ServicesScreen(
                     ) {
                         Surface(
                             shape = CircleShape,
-                            color = MaterialTheme.colorScheme.primaryContainer,
+                            color = Color(0xFFDBEAFE),
                             modifier = Modifier.size(64.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
                                     imageVector = Icons.Default.Build,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
+                                    tint = Color(0xFF0052B4),
                                     modifier = Modifier.size(32.dp)
                                 )
                             }
@@ -270,7 +313,8 @@ fun ServicesScreen(
                         Text(
                             text = if (languageIsFarsi) "هنوز سرویسی ثبت نشده است" else "No Services Recorded",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF0F172A)
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
@@ -279,7 +323,8 @@ fun ServicesScreen(
                             else
                                 "Track your oil changes, maintenance, repairs, and insurance to monitor your car's true running costs.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.secondary,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFF334155),
                             textAlign = TextAlign.Center
                         )
                         Spacer(modifier = Modifier.height(16.dp))
@@ -289,7 +334,7 @@ fun ServicesScreen(
                         ) {
                             Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(if (languageIsFarsi) "ثبت اولین سرویس" else "Add First Service")
+                            Text(if (languageIsFarsi) "ثبت اولین سرویس" else "Add First Service", fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -318,14 +363,14 @@ fun AlertCard(
     val category = SERVICE_CATEGORIES.firstOrNull { it.key == alert.serviceType }
     val catTitle = if (languageIsFarsi) (category?.titleFa ?: alert.serviceType) else (category?.titleEn ?: alert.serviceType)
 
-    val bgColor = if (alert.isOverdue) Color(0xFFFFEBEE) else Color(0xFFFFF8E1)
-    val contentColor = if (alert.isOverdue) Color(0xFFC62828) else Color(0xFFF57F17)
+    val bgColor = if (alert.isOverdue) Color(0xFFFEE2E2) else Color(0xFFFEF3C7)
+    val contentColor = if (alert.isOverdue) Color(0xFFB91C1C) else Color(0xFFB45309)
     val icon = if (alert.isOverdue) Icons.Default.Warning else Icons.Default.Notifications
 
     Surface(
         shape = RoundedCornerShape(14.dp),
         color = bgColor,
-        border = BorderStroke(1.dp, contentColor.copy(alpha = 0.3f)),
+        border = BorderStroke(1.dp, contentColor.copy(alpha = 0.4f)),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -334,8 +379,8 @@ fun AlertCard(
         ) {
             Surface(
                 shape = CircleShape,
-                color = contentColor.copy(alpha = 0.15f),
-                modifier = Modifier.size(36.dp)
+                color = contentColor.copy(alpha = 0.16f),
+                modifier = Modifier.size(38.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(imageVector = icon, contentDescription = null, tint = contentColor, modifier = Modifier.size(20.dp))
@@ -349,8 +394,8 @@ fun AlertCard(
                     } else {
                         if (languageIsFarsi) "یادآوری $catTitle" else "$catTitle reminder"
                     },
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.ExtraBold,
                     color = contentColor
                 )
                 Text(
@@ -362,7 +407,8 @@ fun AlertCard(
                         else "In %,.0f $unit (at %,.0f)".format(alert.kmRemaining, alert.nextDueOdometer)
                     },
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF333333)
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF1E293B)
                 )
             }
         }
@@ -383,13 +429,13 @@ fun ServiceItemCard(
     val icon = category?.icon ?: Icons.Default.Build
 
     val categoryColor = when (service.serviceType) {
-        "OIL" -> Color(0xFFD97706) // Amber/Gold
-        "REPAIR" -> Color(0xFFDC2626) // Red
-        "INSURANCE" -> Color(0xFF2563EB) // Blue
-        "TIRE" -> Color(0xFF059669) // Green
-        "INSPECTION" -> Color(0xFF7C3AED) // Purple
-        "WASH" -> Color(0xFF0284C7) // Sky
-        else -> Color(0xFF4B5563) // Slate
+        "OIL" -> Color(0xFFB45309)        // Rich Dark Amber
+        "REPAIR" -> Color(0xFFB91C1C)     // Deep Crimson
+        "INSURANCE" -> Color(0xFF1D4ED8)  // Deep Royal Blue
+        "TIRE" -> Color(0xFF047857)       // Deep Emerald
+        "INSPECTION" -> Color(0xFF6D28D9) // Deep Violet
+        "WASH" -> Color(0xFF0369A1)       // Deep Ocean Blue
+        else -> Color(0xFF334155)         // Deep Slate
     }
 
     val dateText = PersianDateHelper.formatDisplayDate(service.date, languageIsFarsi, true)
@@ -399,8 +445,11 @@ fun ServiceItemCard(
             .fillMaxWidth()
             .testTag("service_card_${service.id}"),
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White,
+            contentColor = Color(0xFF0F172A)
+        ),
+        border = BorderStroke(1.dp, Color(0xFFCBD5E1)),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -413,8 +462,8 @@ fun ServiceItemCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = categoryColor.copy(alpha = 0.12f),
-                        modifier = Modifier.size(42.dp)
+                        color = categoryColor.copy(alpha = 0.14f),
+                        modifier = Modifier.size(44.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(imageVector = icon, contentDescription = null, tint = categoryColor, modifier = Modifier.size(22.dp))
@@ -425,13 +474,16 @@ fun ServiceItemCard(
                         Text(
                             text = title,
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF0F172A)
                         )
                         Text(
                             text = dateText,
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.secondary
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFF334155),
+                            fontSize = 12.sp
                         )
                     }
                 }
@@ -439,24 +491,24 @@ fun ServiceItemCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(
                         onClick = onEdit,
-                        modifier = Modifier.size(36.dp).testTag("edit_service_btn_${service.id}")
+                        modifier = Modifier.size(40.dp).testTag("edit_service_btn_${service.id}")
                     ) {
                         Icon(
                             imageVector = Icons.Default.Edit,
                             contentDescription = "Edit",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(18.dp)
+                            tint = Color(0xFF0052B4),
+                            modifier = Modifier.size(19.dp)
                         )
                     }
                     IconButton(
                         onClick = onDelete,
-                        modifier = Modifier.size(36.dp).testTag("delete_service_btn_${service.id}")
+                        modifier = Modifier.size(40.dp).testTag("delete_service_btn_${service.id}")
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "Delete",
-                            tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
-                            modifier = Modifier.size(18.dp)
+                            tint = Color(0xFFDC2626),
+                            modifier = Modifier.size(19.dp)
                         )
                     }
                 }
@@ -469,20 +521,25 @@ fun ServiceItemCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFFF8FAFC))
-                    .padding(10.dp),
+                    .background(Color(0xFFF1F5F9))
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
                     Text(
                         text = if (languageIsFarsi) "کیلومتر انجام" else "Odometer",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.secondary
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF334155),
+                        fontSize = 12.sp
                     )
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = String.format(Locale.US, "%,.0f %s", service.odometer, unit),
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF0F172A),
+                        fontSize = 15.sp
                     )
                 }
 
@@ -490,45 +547,56 @@ fun ServiceItemCard(
                     Text(
                         text = if (languageIsFarsi) "هزینه پرداختی" else "Cost",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.secondary
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF334155),
+                        fontSize = 12.sp
                     )
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = String.format(Locale.US, "%,.0f %s", service.cost, currencySymbol),
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = categoryColor
+                        fontWeight = FontWeight.ExtraBold,
+                        color = categoryColor,
+                        fontSize = 15.sp
                     )
                 }
             }
 
             // Next Due and Provider details
             if (service.nextDueOdometer != null && service.nextDueOdometer > 0) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                Spacer(modifier = Modifier.height(10.dp))
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = Color(0xFFEFF6FF),
+                    border = BorderStroke(1.dp, Color(0xFFBFDBFE))
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Refresh,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(14.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = if (languageIsFarsi)
-                            "موعد سرویس بعدی: %,.0f %s".format(service.nextDueOdometer, unit)
-                        else
-                            "Next due at %,.0f %s".format(service.nextDueOdometer, unit),
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = null,
+                            tint = Color(0xFF0052B4),
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = if (languageIsFarsi)
+                                "موعد سرویس بعدی: %,.0f %s".format(service.nextDueOdometer, unit)
+                            else
+                                "Next due at %,.0f %s".format(service.nextDueOdometer, unit),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF1E3A8A),
+                            fontSize = 12.sp
+                        )
+                    }
                 }
             }
 
             if (service.provider.isNotBlank()) {
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(horizontal = 4.dp)
@@ -536,35 +604,41 @@ fun ServiceItemCard(
                     Icon(
                         imageVector = Icons.Default.Place,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.size(14.dp)
+                        tint = Color(0xFF334155),
+                        modifier = Modifier.size(15.dp)
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = service.provider,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.secondary
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF1E293B)
                     )
                 }
             }
 
             if (service.notes.isNotBlank()) {
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
                 Row(
-                    verticalAlignment = Alignment.Top,
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color(0xFFF8FAFC))
+                        .padding(horizontal = 10.dp, vertical = 6.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Info,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.size(14.dp).padding(top = 2.dp)
+                        tint = Color(0xFF334155),
+                        modifier = Modifier.size(15.dp)
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = service.notes,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.secondary,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF1E293B),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )

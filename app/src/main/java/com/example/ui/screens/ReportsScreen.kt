@@ -80,12 +80,17 @@ fun ReportsScreen(
         item {
             Card(
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White,
+                    contentColor = Color(0xFF0F172A)
+                ),
+                border = BorderStroke(1.dp, Color(0xFFCBD5E1)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
             ) {
-                Column(modifier = Modifier.padding(8.dp)) {
+                Column(modifier = Modifier.padding(10.dp)) {
                     LazyRow(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         val periods = listOf(
@@ -100,7 +105,8 @@ fun ReportsScreen(
                             val isSelected = selectedPeriod == period
                             Surface(
                                 shape = RoundedCornerShape(12.dp),
-                                color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                                color = if (isSelected) Color(0xFF0052B4) else Color(0xFFF1F5F9),
+                                border = if (isSelected) null else BorderStroke(1.dp, Color(0xFFCBD5E1)),
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(12.dp))
                                     .clickable {
@@ -114,9 +120,9 @@ fun ReportsScreen(
                                 Text(
                                     text = label,
                                     style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)
+                                    fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Bold,
+                                    color = if (isSelected) Color.White else Color(0xFF1E293B),
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
                                 )
                             }
                         }
@@ -127,8 +133,8 @@ fun ReportsScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                         Surface(
                             shape = RoundedCornerShape(12.dp),
-                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
+                            color = Color(0xFFEFF6FF),
+                            border = BorderStroke(1.dp, Color(0xFF93C5FD)),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp))
@@ -145,7 +151,7 @@ fun ReportsScreen(
                                     Icon(
                                         imageVector = Icons.Default.DateRange,
                                         contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary,
+                                        tint = Color(0xFF0052B4),
                                         modifier = Modifier.size(16.dp)
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
@@ -156,7 +162,8 @@ fun ReportsScreen(
                                             "Range: ${formatDate(customDateRange.start)} to ${formatDate(customDateRange.end)}",
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                                        color = Color(0xFF1E3A8A),
+                                        fontSize = 12.sp
                                     )
                                 }
 
@@ -164,7 +171,7 @@ fun ReportsScreen(
                                     Icon(
                                         imageVector = Icons.Default.Edit,
                                         contentDescription = "Edit range",
-                                        tint = MaterialTheme.colorScheme.primary,
+                                        tint = Color(0xFF0052B4),
                                         modifier = Modifier.size(16.dp)
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
@@ -175,8 +182,8 @@ fun ReportsScreen(
                                         Icon(
                                             imageVector = Icons.Default.Close,
                                             contentDescription = "Reset filter",
-                                            tint = MaterialTheme.colorScheme.secondary,
-                                            modifier = Modifier.size(14.dp)
+                                            tint = Color(0xFF334155),
+                                            modifier = Modifier.size(15.dp)
                                         )
                                     }
                                 }
@@ -255,8 +262,11 @@ fun ReportsScreen(
                     .fillMaxWidth()
                     .testTag("consumption_chart_card"),
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White,
+                    contentColor = Color(0xFF0F172A)
+                ),
+                border = BorderStroke(1.dp, Color(0xFFCBD5E1)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -265,31 +275,34 @@ fun ReportsScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = if (languageIsFarsi) "نمودار تغییرات مصرف سوخت" else "Fuel Consumption Trend",
                                 style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onBackground
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color(0xFF0F172A)
                             )
                             Text(
                                 text = if (languageIsFarsi) "روند مصرف در هر بار سوخت‌گیری ($efficiencyUnit)" else "Efficiency per fill-up ($efficiencyUnit)",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.secondary
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF334155),
+                                fontSize = 12.sp
                             )
                         }
 
                         Surface(
                             shape = CircleShape,
-                            color = Color(0xFF005AC1).copy(alpha = 0.12f),
-                            modifier = Modifier.size(36.dp)
+                            color = Color(0xFFDBEAFE),
+                            modifier = Modifier.size(38.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
                                     imageVector = Icons.Default.Info,
                                     contentDescription = null,
-                                    tint = Color(0xFF005AC1),
-                                    modifier = Modifier.size(18.dp)
+                                    tint = Color(0xFF0052B4),
+                                    modifier = Modifier.size(19.dp)
                                 )
                             }
                         }
@@ -300,7 +313,8 @@ fun ReportsScreen(
                     if (reportsData.consumptionPoints.size < 2) {
                         Surface(
                             shape = RoundedCornerShape(12.dp),
-                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                            color = Color(0xFFF1F5F9),
+                            border = BorderStroke(1.dp, Color(0xFFCBD5E1)),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(160.dp)
@@ -313,7 +327,7 @@ fun ReportsScreen(
                                 Icon(
                                     imageVector = Icons.Default.Info,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.secondary,
+                                    tint = Color(0xFF334155),
                                     modifier = Modifier.size(32.dp)
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
@@ -323,8 +337,9 @@ fun ReportsScreen(
                                     else
                                         "At least 2 consecutive fuel entries are needed to plot the consumption curve.",
                                     style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.SemiBold,
                                     textAlign = TextAlign.Center,
-                                    color = MaterialTheme.colorScheme.secondary
+                                    color = Color(0xFF334155)
                                 )
                             }
                         }
@@ -337,8 +352,47 @@ fun ReportsScreen(
                             languageIsFarsi = languageIsFarsi,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(200.dp)
+                                .height(190.dp)
                         )
+
+                        // Data point values strip for clear numeric reading
+                        val sampledPoints = remember(reportsData.consumptionPoints) {
+                            val pts = reportsData.consumptionPoints
+                            if (pts.size <= 5) pts
+                            else listOf(
+                                pts.first(),
+                                pts[pts.size / 4],
+                                pts[pts.size / 2],
+                                pts[(pts.size * 3) / 4],
+                                pts.last()
+                            ).distinctBy { it.logId }
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            sampledPoints.forEach { pt ->
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(
+                                        text = String.format(Locale.US, "%.1f", pt.efficiency),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = Color(0xFF0F172A),
+                                        fontSize = 11.sp
+                                    )
+                                    Text(
+                                        text = PersianDateHelper.formatDisplayDate(pt.date, languageIsFarsi, false),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color(0xFF334155),
+                                        fontSize = 10.sp
+                                    )
+                                }
+                            }
+                        }
 
                         Spacer(modifier = Modifier.height(12.dp))
 
@@ -351,47 +405,55 @@ fun ReportsScreen(
                             val maxVal = reportsData.maxEfficiency
 
                             Surface(
-                                shape = RoundedCornerShape(8.dp),
-                                color = Color(0xFFECFDF5),
+                                shape = RoundedCornerShape(10.dp),
+                                color = Color(0xFFD1FAE5),
+                                border = BorderStroke(1.dp, Color(0xFF6EE7B7)),
                                 modifier = Modifier.padding(end = 4.dp)
                             ) {
                                 Row(
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
                                         text = if (languageIsFarsi) "کمترین مصرف: " else "Min: ",
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = Color(0xFF047857),
-                                        fontWeight = FontWeight.Bold
+                                        color = Color(0xFF065F46),
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontSize = 12.sp
                                     )
                                     Text(
                                         text = if (minVal != null) String.format(Locale.US, "%.1f %s", minVal, efficiencyUnit) else "---",
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = Color(0xFF065F46)
+                                        color = Color(0xFF064E3B),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp
                                     )
                                 }
                             }
 
                             Surface(
-                                shape = RoundedCornerShape(8.dp),
-                                color = Color(0xFFFEF2F2),
+                                shape = RoundedCornerShape(10.dp),
+                                color = Color(0xFFFEE2E2),
+                                border = BorderStroke(1.dp, Color(0xFFFCA5A5)),
                                 modifier = Modifier.padding(start = 4.dp)
                             ) {
                                 Row(
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
                                         text = if (languageIsFarsi) "بیشترین مصرف: " else "Max: ",
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = Color(0xFFB91C1C),
-                                        fontWeight = FontWeight.Bold
+                                        color = Color(0xFF991B1B),
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontSize = 12.sp
                                     )
                                     Text(
                                         text = if (maxVal != null) String.format(Locale.US, "%.1f %s", maxVal, efficiencyUnit) else "---",
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = Color(0xFF991B1B)
+                                        color = Color(0xFF7F1D1D),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp
                                     )
                                 }
                             }
@@ -408,8 +470,11 @@ fun ReportsScreen(
                     .fillMaxWidth()
                     .testTag("monthly_chart_card"),
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White,
+                    contentColor = Color(0xFF0F172A)
+                ),
+                border = BorderStroke(1.dp, Color(0xFFCBD5E1)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -418,29 +483,42 @@ fun ReportsScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = if (languageIsFarsi) "هزینه‌های ماهانه خودرو" else "Monthly Vehicle Costs",
                                 style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onBackground
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color(0xFF0F172A)
                             )
                             Text(
                                 text = if (languageIsFarsi) "تفکیک هزینه سوخت و سرویس‌ها" else "Fuel vs Service breakdown",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.secondary
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF334155),
+                                fontSize = 12.sp
                             )
                         }
 
                         // Legend
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(modifier = Modifier.size(10.dp).background(Color(0xFF005AC1), CircleShape))
+                            Box(modifier = Modifier.size(10.dp).background(Color(0xFF0052B4), CircleShape))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(if (languageIsFarsi) "سوخت" else "Fuel", fontSize = 10.sp, color = MaterialTheme.colorScheme.secondary)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Box(modifier = Modifier.size(10.dp).background(Color(0xFFF59E0B), CircleShape))
+                            Text(
+                                text = if (languageIsFarsi) "سوخت" else "Fuel",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF1E293B)
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Box(modifier = Modifier.size(10.dp).background(Color(0xFFD97706), CircleShape))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(if (languageIsFarsi) "سرویس" else "Service", fontSize = 10.sp, color = MaterialTheme.colorScheme.secondary)
+                            Text(
+                                text = if (languageIsFarsi) "سرویس" else "Service",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF1E293B)
+                            )
                         }
                     }
 
@@ -449,7 +527,8 @@ fun ReportsScreen(
                     if (reportsData.monthlyExpenses.isEmpty()) {
                         Surface(
                             shape = RoundedCornerShape(12.dp),
-                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                            color = Color(0xFFF1F5F9),
+                            border = BorderStroke(1.dp, Color(0xFFCBD5E1)),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(140.dp)
@@ -458,7 +537,8 @@ fun ReportsScreen(
                                 Text(
                                     text = if (languageIsFarsi) "اطلاعاتی در این بازه زمانی وجود ندارد" else "No expense records for this period",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.secondary
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color(0xFF334155)
                                 )
                             }
                         }
@@ -469,7 +549,7 @@ fun ReportsScreen(
                             languageIsFarsi = languageIsFarsi,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(210.dp)
+                                .height(190.dp)
                         )
                     }
                 }
@@ -483,21 +563,27 @@ fun ReportsScreen(
                     .fillMaxWidth()
                     .testTag("categories_breakdown_card"),
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White,
+                    contentColor = Color(0xFF0F172A)
+                ),
+                border = BorderStroke(1.dp, Color(0xFFCBD5E1)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         text = if (languageIsFarsi) "سهم هزینه‌های خودرو به تفکیک بخش" else "Expense Distribution by Category",
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF0F172A)
                     )
                     Text(
                         text = if (languageIsFarsi) "درصد سهم هر بخش از کل مخارج" else "Percentage share of total vehicle spend",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.secondary
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF334155),
+                        fontSize = 12.sp
                     )
 
                     Spacer(modifier = Modifier.height(14.dp))
@@ -506,7 +592,8 @@ fun ReportsScreen(
                         Text(
                             text = if (languageIsFarsi) "هنوز رکوردی ثبت نشده است." else "No records available.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.secondary
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFF334155)
                         )
                     } else {
                         // Multi-color distribution bar
@@ -526,7 +613,7 @@ fun ReportsScreen(
                                 currencySymbol = currencySymbol,
                                 languageIsFarsi = languageIsFarsi
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(10.dp))
                         }
                     }
                 }
@@ -560,9 +647,12 @@ fun MetricCard(
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White,
+            contentColor = Color(0xFF0F172A)
+        ),
+        border = BorderStroke(1.dp, Color(0xFFCBD5E1)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             Row(
@@ -572,37 +662,41 @@ fun MetricCard(
             ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1E293B),
+                    fontSize = 13.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
                 )
                 Surface(
                     shape = CircleShape,
-                    color = accentColor.copy(alpha = 0.12f),
-                    modifier = Modifier.size(28.dp)
+                    color = accentColor.copy(alpha = 0.15f),
+                    modifier = Modifier.size(30.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(imageVector = icon, contentDescription = null, tint = accentColor, modifier = Modifier.size(15.dp))
+                        Icon(imageVector = icon, contentDescription = null, tint = accentColor, modifier = Modifier.size(16.dp))
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = value,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Black,
-                color = MaterialTheme.colorScheme.onBackground,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color(0xFF0F172A),
+                fontSize = 17.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(3.dp))
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f),
-                fontSize = 9.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF475569),
+                fontSize = 11.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -618,16 +712,17 @@ fun FuelEfficiencyTrendChart(
     languageIsFarsi: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val strokeColor = Color(0xFF005AC1)
-    val avgLineColor = Color(0xFF94A3B8)
+    val strokeColor = Color(0xFF0052B4)
+    val avgLineColor = Color(0xFF475569)
+    val gridLineColor = Color(0xFFE2E8F0)
 
-    Canvas(modifier = modifier.padding(vertical = 12.dp, horizontal = 16.dp)) {
+    Canvas(modifier = modifier.padding(vertical = 10.dp, horizontal = 14.dp)) {
         if (points.size < 2) return@Canvas
 
         val w = size.width
         val h = size.height
-        val paddingBottom = 20.dp.toPx()
-        val paddingTop = 15.dp.toPx()
+        val paddingBottom = 16.dp.toPx()
+        val paddingTop = 14.dp.toPx()
         val usableHeight = h - paddingBottom - paddingTop
 
         val values = points.map { it.efficiency }
@@ -642,6 +737,17 @@ fun FuelEfficiencyTrendChart(
 
         fun getX(index: Int): Float {
             return (index.toFloat() / (points.size - 1)) * w
+        }
+
+        // Subtle horizontal reference grid lines
+        listOf(0.0f, 0.5f, 1.0f).forEach { frac ->
+            val gy = h - paddingBottom - (frac * usableHeight)
+            drawLine(
+                color = gridLineColor,
+                start = Offset(0f, gy),
+                end = Offset(w, gy),
+                strokeWidth = 1.dp.toPx()
+            )
         }
 
         // Draw average dashed line
@@ -730,16 +836,16 @@ fun MonthlyCostBarChart(
     languageIsFarsi: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val fuelColor = Color(0xFF005AC1)
-    val serviceColor = Color(0xFFF59E0B)
+    val fuelColor = Color(0xFF0052B4)
+    val serviceColor = Color(0xFFD97706)
 
     Canvas(modifier = modifier.padding(vertical = 8.dp, horizontal = 8.dp)) {
         if (monthlyData.isEmpty()) return@Canvas
 
         val w = size.width
         val h = size.height
-        val paddingBottom = 28.dp.toPx()
-        val paddingTop = 12.dp.toPx()
+        val paddingBottom = 16.dp.toPx()
+        val paddingTop = 10.dp.toPx()
         val usableHeight = h - paddingBottom - paddingTop
 
         val maxMonthTotal = monthlyData.maxOfOrNull { it.totalCost } ?: 1.0
@@ -747,7 +853,19 @@ fun MonthlyCostBarChart(
 
         val count = monthlyData.size
         val groupWidth = w / count
-        val barWidth = (groupWidth * 0.32f).coerceAtMost(24.dp.toPx())
+        val barWidth = (groupWidth * 0.34f).coerceAtMost(26.dp.toPx())
+        val baseBottom = h - paddingBottom
+
+        // Horizontal reference lines
+        listOf(0.5f, 1.0f).forEach { frac ->
+            val gy = baseBottom - (frac * usableHeight)
+            drawLine(
+                color = Color(0xFFE2E8F0),
+                start = Offset(0f, gy),
+                end = Offset(w, gy),
+                strokeWidth = 1.dp.toPx()
+            )
+        }
 
         for (i in 0 until count) {
             val item = monthlyData[i]
@@ -759,15 +877,13 @@ fun MonthlyCostBarChart(
             val fuelLeft = groupCenterX - barWidth - 2.dp.toPx()
             val serviceLeft = groupCenterX + 2.dp.toPx()
 
-            val baseBottom = h - paddingBottom
-
             // Draw fuel bar
             if (fuelHeight > 0) {
                 drawRoundRect(
                     color = fuelColor,
                     topLeft = Offset(fuelLeft, baseBottom - fuelHeight),
                     size = Size(barWidth, fuelHeight),
-                    cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx())
+                    cornerRadius = CornerRadius(5.dp.toPx(), 5.dp.toPx())
                 )
             }
 
@@ -777,18 +893,18 @@ fun MonthlyCostBarChart(
                     color = serviceColor,
                     topLeft = Offset(serviceLeft, baseBottom - serviceHeight),
                     size = Size(barWidth, serviceHeight),
-                    cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx())
+                    cornerRadius = CornerRadius(5.dp.toPx(), 5.dp.toPx())
                 )
             }
-
-            // Base tick
-            drawLine(
-                color = Color(0xFFE2E8F0),
-                start = Offset(0f, baseBottom),
-                end = Offset(w, baseBottom),
-                strokeWidth = 1.dp.toPx()
-            )
         }
+
+        // Solid crisp baseline
+        drawLine(
+            color = Color(0xFF94A3B8),
+            start = Offset(0f, baseBottom),
+            end = Offset(w, baseBottom),
+            strokeWidth = 1.5.dp.toPx()
+        )
     }
 
     // Month labels row below Canvas
@@ -803,15 +919,16 @@ fun MonthlyCostBarChart(
                 Text(
                     text = item.displayLabel,
                     style = MaterialTheme.typography.labelSmall,
-                    fontSize = 10.sp,
-                    color = MaterialTheme.colorScheme.secondary
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF334155)
                 )
                 Text(
                     text = String.format(Locale.US, "%,.0f", item.totalCost),
                     style = MaterialTheme.typography.labelSmall,
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color(0xFF0F172A)
                 )
             }
         }
@@ -826,7 +943,7 @@ fun MultiColorDistributionBar(
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(Color(0xFFF1F5F9))
+            .background(Color(0xFFE2E8F0))
     ) {
         categories.forEach { cat ->
             if (cat.percentage > 0.01f) {
@@ -863,57 +980,60 @@ fun CategoryProgressRow(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(modifier = Modifier.size(10.dp).background(color, RoundedCornerShape(3.dp)))
+                Box(modifier = Modifier.size(11.dp).background(color, RoundedCornerShape(3.dp)))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = catName,
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF0F172A)
                 )
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = String.format(Locale.US, "%,.0f %s", category.amount, currencySymbol),
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color(0xFF0F172A)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Surface(
                     shape = RoundedCornerShape(6.dp),
-                    color = color.copy(alpha = 0.12f)
+                    color = color.copy(alpha = 0.14f)
                 ) {
                     Text(
                         text = String.format(Locale.US, "%.0f%%", category.percentage * 100),
                         style = MaterialTheme.typography.labelSmall,
                         color = color,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp)
                     )
                 }
             }
         }
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(6.dp))
         LinearProgressIndicator(
             progress = { category.percentage },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(4.dp)
-                .clip(RoundedCornerShape(2.dp)),
+                .height(6.dp)
+                .clip(RoundedCornerShape(3.dp)),
             color = color,
-            trackColor = Color(0xFFF1F5F9)
+            trackColor = Color(0xFFE2E8F0)
         )
     }
 }
 
 fun getCategoryColor(categoryKey: String): Color {
     return when (categoryKey) {
-        "FUEL" -> Color(0xFF005AC1)
-        "OIL" -> Color(0xFFD97706)
-        "REPAIR" -> Color(0xFFDC2626)
-        "INSURANCE" -> Color(0xFF2563EB)
-        "TIRE" -> Color(0xFF059669)
-        "INSPECTION" -> Color(0xFF7C3AED)
-        "WASH" -> Color(0xFF0284C7)
-        else -> Color(0xFF6B7280)
+        "FUEL" -> Color(0xFF0052B4)
+        "OIL" -> Color(0xFFB45309)
+        "REPAIR" -> Color(0xFFB91C1C)
+        "INSURANCE" -> Color(0xFF1D4ED8)
+        "TIRE" -> Color(0xFF047857)
+        "INSPECTION" -> Color(0xFF6D28D9)
+        "WASH" -> Color(0xFF0369A1)
+        else -> Color(0xFF334155)
     }
 }
