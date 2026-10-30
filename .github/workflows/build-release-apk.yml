@@ -34,6 +34,9 @@ jobs:
           mkdir -p "$ANDROID_SDK_ROOT"
           echo "Using pre-installed Android SDK or sdkmanager at $ANDROID_SDK_ROOT"
 
+      - name: Write local.properties
+        run: echo "sdk.dir=${ANDROID_SDK_ROOT}" > local.properties
+
       - name: Accept licenses
         run: |
           yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses || true
