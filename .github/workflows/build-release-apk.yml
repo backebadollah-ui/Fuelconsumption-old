@@ -30,7 +30,7 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Install Android SDK manually
+      - name: Install Android SDK
         shell: bash
         run: |
           set -e
@@ -42,13 +42,18 @@ jobs:
           rm -f cmdline-tools.zip
 
           mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
-          if [ -d "$ANDROID_SDK_ROOT/cmdline-tools/bin" ]; then
-            echo "cmdline-tools already in place"
+          if [ -d "$ANDROID_SDK_ROOT/cmdline-tools/latest" ]; then
+            echo "cmdline-tools already installed"
           else
-            mv "$ANDROID_SDK_ROOT/cmdline-tools*" "$ANDROID_SDK_ROOT/cmdline-tools/tmp" 2>/dev/null || true
-            if [ -d "$ANDROID_SDK_ROOT/cmdline-tools/tmp" ]; then
-              rm -rf "$ANDROID_SDK_ROOT/cmdline-tools"
-              mv "$ANDROID_SDK_ROOT/cmdline-tools/tmp" "$ANDROID_SDK_ROOT/cmdline-tools"
+            ls "$ANDROID_SDK_ROOT"
+            if [ -d "$ANDROID_SDK_ROOT/cmdline-tools" ] && [ -n "$(ls -A "$ANDROID_SDK_ROOT/cmdline-tools")" ]; then
+              :
+            else
+              mv "$ANDROID_SDK_ROOT/cmdline-tools"* "$ANDROID_SDK_ROOT/cmdline-tools/tmp" 2>/dev/null || true
+              if [ -d "$ANDROID_SDK_ROOT/cmdline-tools/tmp" ]; then
+                rm -rf "$ANDROID_SDK_ROOT/cmdline-tools"
+                mv "$ANDROID_SDK_ROOT/cmdline-tools/tmp" "$ANDROID_SDK_ROOT/cmdline-tools"
+              fi
             fi
           fi
 
@@ -67,10 +72,8 @@ jobs:
         shell: bash
         run: |
           set -e
-
           if [ -n "${KEYSTORE_BASE64:-}" ]; then
             echo "${KEYSTORE_BASE64}" | base64 --decode > "$KEYSTORE_PATH"
-
             if keytool -list -keystore "$KEYSTORE_PATH" -storepass "${STORE_PASSWORD:-android}" -keypass "${KEY_PASSWORD:-android}" >/tmp/keystore_check.txt 2>/dev/null; then
               echo "Using provided keystore"
             else
