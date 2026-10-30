@@ -28,39 +28,22 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: gradle
 
-      - name: Install Android SDK manually
-        shell: bash
+      - name: Setup Android SDK
         run: |
-          set -eux
-
           mkdir -p "$ANDROID_SDK_ROOT"
+          echo "Using pre-installed Android SDK or sdkmanager at $ANDROID_SDK_ROOT"
 
-          cd /tmp
-          curl -fsSL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o cmdline-tools.zip
-          rm -rf "$ANDROID_SDK_ROOT/cmdline-tools"
-          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
-          unzip -q -o cmdline-tools.zip -d "$ANDROID_SDK_ROOT/cmdline-tools"
-          rm -f cmdline-tools.zip
+      - name: Accept licenses
+        run: |
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-          if [ -d "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" ]; then
-            mv "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/latest"
-          fi
-
-          if [ ! -x "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" ]; then
-            echo "sdkmanager not found at expected path"
-            find "$ANDROID_SDK_ROOT" -maxdepth 4 -type f -name sdkmanager
-            exit 1
-          fi
-
-          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_SDK_ROOT" --licenses >/dev/null
-          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_SDK_ROOT" --install \
+      - name: Install Android SDK packages
+        run: |
+          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --install \
             "platform-tools" \
-            "platforms;android-36" \
-            "build-tools;36.0.0"
-
-          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$GITHUB_WORKSPACE/local.properties"
+            "platforms;android-34" \
+            "build-tools;34.0.0"
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
@@ -92,7 +75,6 @@ jobs:
           fi
 
       - name: Build Release APK
-        shell: bash
         run: ./gradlew assembleRelease --no-daemon
 
       - name: Upload APK
