@@ -32,13 +32,10 @@ android {
             if (keystoreFile.exists()) {
                 storeFile = keystoreFile
                 storePassword = System.getenv("STORE_PASSWORD") ?: "android"
-                keyAlias = "upload"
+                keyAlias = System.getenv("KEY_ALIAS") ?: "upload"
                 keyPassword = System.getenv("KEY_PASSWORD") ?: "android"
             } else {
                 val fallback = file("${rootDir}/debug.keystore")
-                if (!fallback.exists()) {
-                    logger.lifecycle("No release keystore found; using Android debug fallback for CI")
-                }
                 storeFile = fallback
                 storePassword = "android"
                 keyAlias = "androiddebugkey"
