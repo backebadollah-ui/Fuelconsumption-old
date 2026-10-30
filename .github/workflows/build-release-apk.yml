@@ -16,6 +16,7 @@ jobs:
       STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
       KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       KEYSTORE_PATH: ${{ github.workspace }}/my-upload-key.jks
+      KEY_ALIAS: upload
 
     steps:
       - name: Checkout
@@ -37,6 +38,17 @@ jobs:
         run: |
           echo "${KEYSTORE_BASE64}" | base64 --decode > "$KEYSTORE_PATH"
           ls -l "$KEYSTORE_PATH"
+
+      - name: Detect keystore alias
+        if: env.KEYSTORE_BASE64 != ''
+        shell: bash
+        run: |
+          ALIAS=$(keytool -list -keystore "$KEYSTORE_PATH" -storepass "${STORE_PASSWORD}" -keypass "${KEY_PASSWORD}" 2>/dev/null | awk '/Alias name:/{print $3; exit}')
+          if [ -n "$ALIAS" ]; then
+            echo "KEY_ALIAS=$ALIAS" >> "$GITHUB_ENV"
+          else
+            echo "KEY_ALIAS=upload" >> "$GITHUB_ENV"
+          fi
 
       - name: Generate fallback keystore for CI
         if: env.KEYSTORE_BASE64 == ''
