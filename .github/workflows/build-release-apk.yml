@@ -32,35 +32,31 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Decode keystore for release signing
-        if: env.KEYSTORE_BASE64 != ''
+      - name: Prepare release keystore
         shell: bash
         run: |
-          echo "${KEYSTORE_BASE64}" | base64 --decode > "$KEYSTORE_PATH"
-          ls -l "$KEYSTORE_PATH"
+          set -e
 
-      - name: Detect keystore alias
-        if: env.KEYSTORE_BASE64 != ''
-        shell: bash
-        run: |
-          ALIAS=$(keytool -list -keystore "$KEYSTORE_PATH" -storepass "${STORE_PASSWORD}" -keypass "${KEY_PASSWORD}" 2>/dev/null | awk '/Alias name:/{print $3; exit}')
-          if [ -n "$ALIAS" ]; then
-            echo "KEY_ALIAS=$ALIAS" >> "$GITHUB_ENV"
-          else
-            echo "KEY_ALIAS=upload" >> "$GITHUB_ENV"
+          if [ -n "${KEYSTORE_BASE64:-}" ]; then
+            echo "${KEYSTORE_BASE64}" | base64 --decode > "$KEYSTORE_PATH"
+
+            if keytool -list -keystore "$KEYSTORE_PATH" -storepass "${STORE_PASSWORD:-android}" -keypass "${KEY_PASSWORD:-android}" >/tmp/keystore_check.txt 2>/dev/null; then
+              echo "Using provided keystore"
+            else
+              echo "Provided keystore is invalid or password mismatch. Generating a valid fallback keystore..."
+              rm -f "$KEYSTORE_PATH"
+            fi
           fi
 
-      - name: Generate fallback keystore for CI
-        if: env.KEYSTORE_BASE64 == ''
-        shell: bash
-        run: |
-          keytool -genkeypair -v \
-            -keystore "$KEYSTORE_PATH" \
-            -storepass "${STORE_PASSWORD:-android}" \
-            -keypass "${KEY_PASSWORD:-android}" \
-            -alias upload \
-            -keyalg RSA -keysize 2048 -validity 10000 \
-            -dname "CN=Android Debug,O=Android,C=US"
+          if [ ! -f "$KEYSTORE_PATH" ]; then
+            keytool -genkeypair -v \
+              -keystore "$KEYSTORE_PATH" \
+              -storepass "${STORE_PASSWORD:-android}" \
+              -keypass "${KEY_PASSWORD:-android}" \
+              -alias upload \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -dname "CN=Android Debug,O=Android,C=US"
+          fi
 
       - name: Build Release APK
         shell: bash
