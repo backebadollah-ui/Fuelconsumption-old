@@ -17,6 +17,7 @@ jobs:
       KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       KEYSTORE_PATH: ${{ github.workspace }}/my-upload-key.jks
       KEY_ALIAS: upload
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
 
     steps:
       - name: Checkout
@@ -29,18 +30,35 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android SDK platform
+      - name: Install Android SDK manually
         shell: bash
         run: |
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "platforms;android-36" "build-tools;36.0.0" "platform-tools"
+          set -e
+          mkdir -p "$ANDROID_SDK_ROOT"
+          cd /tmp
 
-      - name: Create local.properties
-        shell: bash
-        run: |
-          echo "sdk.dir=$ANDROID_HOME" > local.properties
+          curl -fsSL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o cmdline-tools.zip
+          unzip -q -o cmdline-tools.zip -d "$ANDROID_SDK_ROOT"
+          rm -f cmdline-tools.zip
+
+          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
+          if [ -d "$ANDROID_SDK_ROOT/cmdline-tools/bin" ]; then
+            echo "cmdline-tools already in place"
+          else
+            mv "$ANDROID_SDK_ROOT/cmdline-tools*" "$ANDROID_SDK_ROOT/cmdline-tools/tmp" 2>/dev/null || true
+            if [ -d "$ANDROID_SDK_ROOT/cmdline-tools/tmp" ]; then
+              rm -rf "$ANDROID_SDK_ROOT/cmdline-tools"
+              mv "$ANDROID_SDK_ROOT/cmdline-tools/tmp" "$ANDROID_SDK_ROOT/cmdline-tools"
+            fi
+          fi
+
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/bin/sdkmanager" --sdk_root="$ANDROID_SDK_ROOT" --licenses
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/bin/sdkmanager" --sdk_root="$ANDROID_SDK_ROOT" \
+            "platform-tools" \
+            "platforms;android-36" \
+            "build-tools;36.0.0"
+
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$GITHUB_WORKSPACE/local.properties"
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
