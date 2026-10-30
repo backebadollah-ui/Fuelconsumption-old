@@ -33,10 +33,14 @@ jobs:
 
       - name: Decode keystore for release signing
         if: env.KEYSTORE_BASE64 != ''
-        run: echo "${KEYSTORE_BASE64}" | base64 -d > "$KEYSTORE_PATH"
+        shell: bash
+        run: |
+          echo "${KEYSTORE_BASE64}" | base64 --decode > "$KEYSTORE_PATH"
+          ls -l "$KEYSTORE_PATH"
 
       - name: Generate fallback keystore for CI
         if: env.KEYSTORE_BASE64 == ''
+        shell: bash
         run: |
           keytool -genkeypair -v \
             -keystore "$KEYSTORE_PATH" \
@@ -47,6 +51,7 @@ jobs:
             -dname "CN=Android Debug,O=Android,C=US"
 
       - name: Build Release APK
+        shell: bash
         run: ./gradlew assembleRelease --no-daemon
 
       - name: Upload APK
