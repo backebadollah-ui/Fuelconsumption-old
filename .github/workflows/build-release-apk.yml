@@ -33,32 +33,30 @@ jobs:
       - name: Install Android SDK
         shell: bash
         run: |
-          set -e
-          mkdir -p "$ANDROID_SDK_ROOT"
-          cd /tmp
+          set -eux
 
+          mkdir -p "$ANDROID_SDK_ROOT"
+
+          cd /tmp
           curl -fsSL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o cmdline-tools.zip
-          unzip -q -o cmdline-tools.zip -d "$ANDROID_SDK_ROOT"
+          rm -rf "$ANDROID_SDK_ROOT/cmdline-tools"
+          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
+          unzip -q -o cmdline-tools.zip -d "$ANDROID_SDK_ROOT/cmdline-tools"
           rm -f cmdline-tools.zip
 
-          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
-          if [ -d "$ANDROID_SDK_ROOT/cmdline-tools/latest" ]; then
-            echo "cmdline-tools already installed"
-          else
-            ls "$ANDROID_SDK_ROOT"
-            if [ -d "$ANDROID_SDK_ROOT/cmdline-tools" ] && [ -n "$(ls -A "$ANDROID_SDK_ROOT/cmdline-tools")" ]; then
-              :
-            else
-              mv "$ANDROID_SDK_ROOT/cmdline-tools"* "$ANDROID_SDK_ROOT/cmdline-tools/tmp" 2>/dev/null || true
-              if [ -d "$ANDROID_SDK_ROOT/cmdline-tools/tmp" ]; then
-                rm -rf "$ANDROID_SDK_ROOT/cmdline-tools"
-                mv "$ANDROID_SDK_ROOT/cmdline-tools/tmp" "$ANDROID_SDK_ROOT/cmdline-tools"
-              fi
-            fi
+          # official path expected by sdkmanager
+          if [ -d "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" ]; then
+            mv "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/latest"
           fi
 
-          yes | "$ANDROID_SDK_ROOT/cmdline-tools/bin/sdkmanager" --sdk_root="$ANDROID_SDK_ROOT" --licenses
-          yes | "$ANDROID_SDK_ROOT/cmdline-tools/bin/sdkmanager" --sdk_root="$ANDROID_SDK_ROOT" \
+          if [ ! -x "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" ]; then
+            echo "sdkmanager not found at expected path"
+            find "$ANDROID_SDK_ROOT" -maxdepth 4 -type f -name sdkmanager
+            exit 1
+          fi
+
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_SDK_ROOT" --licenses >/dev/null
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_SDK_ROOT" --install \
             "platform-tools" \
             "platforms;android-36" \
             "build-tools;36.0.0"
@@ -72,8 +70,10 @@ jobs:
         shell: bash
         run: |
           set -e
+
           if [ -n "${KEYSTORE_BASE64:-}" ]; then
             echo "${KEYSTORE_BASE64}" | base64 --decode > "$KEYSTORE_PATH"
+
             if keytool -list -keystore "$KEYSTORE_PATH" -storepass "${STORE_PASSWORD:-android}" -keypass "${KEY_PASSWORD:-android}" >/tmp/keystore_check.txt 2>/dev/null; then
               echo "Using provided keystore"
             else
