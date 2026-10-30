@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "com.aistudio.fueltracker.zmxyd"
-    compileSdk = 36
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.aistudio.fueltracker.zmxyd"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
